@@ -1,0 +1,45 @@
+commands = {}
+dependencies = {
+   fzy = {
+      ["1.0.3-1"] = {
+         {
+            constraints = {
+               {
+                  op = ">=",
+                  version = {
+                     5, 1, string = "5.1"
+                  }
+               }
+            },
+            name = "lua"
+         }
+      }
+   }
+}
+modules = {
+   fzy = {
+      "fzy/1.0.3-1"
+   },
+   fzy_lua = {
+      "fzy/1.0.3-1"
+   },
+   fzy_native = {
+      "fzy/1.0.3-1"
+   }
+}
+repository = {
+   fzy = {
+      ["1.0.3-1"] = {
+         {
+            arch = "installed",
+            commands = {},
+            dependencies = {},
+            modules = {
+               fzy = "fzy.lua",
+               fzy_lua = "fzy_lua.lua",
+               fzy_native = "fzy_native.so"
+            }
+         }
+      }
+   }
+}

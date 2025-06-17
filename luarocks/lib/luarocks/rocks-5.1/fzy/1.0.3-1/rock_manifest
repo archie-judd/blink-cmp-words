@@ -1,0 +1,13 @@
+rock_manifest = {
+   docs = {
+      ["fzy.md"] = "ec2de017609830d5bd9a385510362933"
+   },
+   ["fzy-1.0.3-1.rockspec"] = "d56bffd059bc303e7b64e604526383e2",
+   lib = {
+      ["fzy_native.so"] = "4543f64ee5542339992e552d0503f794"
+   },
+   lua = {
+      ["fzy.lua"] = "25b7c1e63fc85735c4214a4900eb653b",
+      ["fzy_lua.lua"] = "81217aac4152c3597ee53090a76eb290"
+   }
+}
