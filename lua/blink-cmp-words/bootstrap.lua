@@ -7,7 +7,7 @@ if not _G.__bootstrap_done then
 		.. "/luarocks/share/lua/5.1/?.lua;"
 		.. plugin_dir
 		.. "/luarocks/share/lua/5.1/?/init.lua"
-	local cpath = plugin_dir .. "luarocks/lib/lua/5.1/?.so"
+	local cpath = plugin_dir .. "/luarocks/lib/lua/5.1/?.so"
 	package.path = package.path .. ";" .. package_path
 	package.cpath = package.cpath .. ";" .. cpath
 end
