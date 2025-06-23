@@ -11,7 +11,7 @@
           buildInputs = [ pkgs.lua51Packages.lua pkgs.lua51Packages.luarocks ];
         };
         packages.default = pkgs.vimUtils.buildVimPlugin {
-          name = "telescope-words.nvim";
+          name = "blink-cmp-words";
           src = ./.;
         };
 
