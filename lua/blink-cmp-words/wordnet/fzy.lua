@@ -2,7 +2,7 @@
 _G.__bootstrap_done = false
 if not _G.__bootstrap_done then
 	local filepath = debug.getinfo(1, "S").source:match("@(.*)")
-	local plugin_dir = vim.fn.fnamemodify(filepath, ":p:h:h:h:h:h")
+	local plugin_dir = vim.fn.fnamemodify(filepath, ":p:h:h:h:h")
 
 	-- Debug: Print the actual paths
 	print("Current file: " .. filepath)
