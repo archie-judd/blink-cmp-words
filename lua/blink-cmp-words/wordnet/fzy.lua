@@ -1,39 +1,33 @@
---- This file is used to bootstrap the bundle fzy plugin in /luarocks. It sets up the package.path and package.cpath
-_G.__bootstrap_done = false
-if not _G.__bootstrap_done then
-	local filepath = debug.getinfo(1, "S").source:match("@(.*)")
-	local plugin_dir = vim.fn.fnamemodify(filepath, ":p:h:h:h:h")
+local bootstrapped = false
+local fzy_module = nil
 
-	-- Debug: Print the actual paths
-	print("Current file: " .. filepath)
-	print("Plugin dir: " .. plugin_dir)
+local function ensure_fzy()
+	if bootstrapped then
+		return fzy_module
+	end
 
-	-- Check if luarocks directory exists at plugin root
-	local luarocks_dir = plugin_dir .. "/luarocks"
-	print(
-		"Luarocks dir: "
-			.. luarocks_dir
-			.. " -> "
-			.. (vim.fn.isdirectory(luarocks_dir) == 1 and "EXISTS" or "NOT FOUND")
-	)
+	local script_path = debug.getinfo(1, "S").source:match("@(.*)")
+	local plugin_root = vim.fn.fnamemodify(script_path, ":p:h:h:h:h")
+	local luarocks_dir = plugin_root .. "/luarocks"
 
-	local package_path = plugin_dir
-		.. "/luarocks/share/lua/5.1/?.lua;"
-		.. plugin_dir
-		.. "/luarocks/share/lua/5.1/?/init.lua"
-	local cpath = plugin_dir .. "/luarocks/lib/lua/5.1/?.so"
+	if vim.fn.isdirectory(luarocks_dir) == 0 then
+		error("Bundled fzy not found at: " .. luarocks_dir)
+	end
 
-	print("Package path: " .. package_path)
-	print("C path: " .. cpath)
+	local lua_path = luarocks_dir .. "/share/lua/5.1/?.lua;" .. luarocks_dir .. "/share/lua/5.1/?/init.lua"
+	local c_path = luarocks_dir .. "/lib/lua/5.1/?.so"
 
-	vim.print(package_path, cpath)
-	package.path = package.path .. ";" .. package_path
-	package.cpath = package.cpath .. ";" .. cpath
-	_G.__bootstrap_done = true
+	package.path = package.path .. ";" .. lua_path
+	package.cpath = package.cpath .. ";" .. c_path
+
+	local ok, fzy = pcall(require, "fzy")
+	if not ok then
+		error("Failed to load bundled fzy: " .. fzy)
+	end
+
+	fzy_module = fzy
+	bootstrapped = true
+	return fzy_module
 end
 
-local ok, fzy = pcall(require, "fzy")
-if not ok then
-	vim.notify("Failed to load fzy: " .. fzy, vim.log.levels.ERROR)
-end
-return fzy
+return ensure_fzy()
