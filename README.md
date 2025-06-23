@@ -1,10 +1,13 @@
 # Blink Completion Words
 
-Fuzzy complete words and synonyms using blink-cmp. 
+Fuzzy complete words and synonyms using blink-cmp.
 
 ## What is Blink Completion Words?
 
-`blink-cmp-words` is an extension for `blink-cmp` that enables fast fuzzy-completion of words, and synonyms.
+`blink-cmp-words` is an extension for `blink-cmp` that can be used in two ways:
+
+1. **As a dictionary** - provides word completion with definitions and related terms
+2. **As a thesaurus** - provides synonym completion for finding alternative words
 
 It uses Princeton University's [WordNet](https://wordnet.princeton.edu/) lexical database to provide words, definitions and lexical relations.
 
@@ -31,16 +34,13 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 		sources = {
 			default = { "lsp", "path", "lazydev" },
 			providers = {
-				-- Use the dictionary source
-				dictionary = {
+
+				-- Use the thesaurus source
+				thesaurus = {
 					name = "blink-cmp-words",
-					module = "blink-cmp-words.dictionary",
+					module = "blink-cmp-words.thesaurus",
 					-- All available options
 					opts = {
-						-- The number of characters required to trigger completion. 
-						-- Set this higher if completion is slow, 3 is default.
-						dictionary_search_threshold = 3,
-
 						-- A score offset applied to returned items. 
 						-- By default the highest score is 0 (item 1 has a score of -1, item 2 of -2 etc..).
 						score_offset = 0,
@@ -52,12 +52,16 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 					},
 				},
 
-				-- Use the thesaurus source
-				thesaurus = {
+				-- Use the dictionary source
+				dictionary = {
 					name = "blink-cmp-words",
-					module = "blink-cmp-words.thesaurus",
+					module = "blink-cmp-words.dictionary",
 					-- All available options
 					opts = {
+						-- The number of characters required to trigger completion. 
+						-- Set this higher if completion is slow, 3 is default.
+						dictionary_search_threshold = 3,
+
 						-- See above
 						score_offset = 0,
 
