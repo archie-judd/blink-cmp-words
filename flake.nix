@@ -12,13 +12,14 @@
             pkgs.lua51Packages.lua
             pkgs.lua51Packages.luarocks
             # pkgs.lua51Packages.fzy
-            pkgs.vimPlugins.blink-cmp
+            # pkgs.vimPlugins.blink-cmp
           ];
         };
         packages.default = pkgs.vimUtils.buildVimPlugin {
           name = "blink-cmp-words";
           src = ./.;
-        };
+          dependencies = with pkgs.vimPlugins; [ blink-cmp ];
 
+        };
       });
 }
