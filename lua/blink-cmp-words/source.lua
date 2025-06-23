@@ -1,4 +1,3 @@
-require("blink-cmp-words.bootstrap")
 local wordnet = require("blink-cmp-words.wordnet")
 local cmp_types = require("blink.cmp.types")
 

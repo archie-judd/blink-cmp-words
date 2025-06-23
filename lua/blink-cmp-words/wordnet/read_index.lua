@@ -1,4 +1,4 @@
-local fzy = require("fzy")
+local fzy = require("blink-cmp-words.wordnet.fzy")
 local config = require("blink-cmp-words.wordnet.config")
 local parse = require("blink-cmp-words.wordnet.parse")
 local utils = require("blink-cmp-words.wordnet.utils")
