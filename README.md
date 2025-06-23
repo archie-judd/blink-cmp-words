@@ -4,15 +4,10 @@ Fuzzy complete words and synonyms using blink-cmp.
 
 ## What is Blink Completion Words?
 
-`blink-cmp-words` is a fast-offline word completion source for `blink-cmp`. It provides two sources - a dictionary that suggests fuzzy completion, and a thesaurus that suggests synonyms.
+`blink-cmp-words` is an extension for `blink-cmp` that enables fast fuzzy-completion of words, and synonyms.
 
 It uses Princeton University's [WordNet](https://wordnet.princeton.edu/) lexical database to provide words, definitions and lexical relations.
 
-<<<<<<< HEAD
-See also [Telescope Words](https://github.com/archie-judd/telescope-words.nvim).
-
-=======
->>>>>>> 077030f (initial commit)
 [thesaurus-demo.webm](https://github.com/user-attachments/assets/e0695ce1-aae9-4ed8-8b8d-b09ac1b72994)
 
 ## Getting Started
