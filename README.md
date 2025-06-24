@@ -11,7 +11,7 @@ Fuzzy complete words and synonyms using blink-cmp.
 
 It uses Princeton University's [WordNet](https://wordnet.princeton.edu/) lexical database to provide words, definitions and lexical relations.
 
-[thesaurus-demo.webm](https://github.com/user-attachments/assets/e0695ce1-aae9-4ed8-8b8d-b09ac1b72994)
+[thesaurus-demo.webm](https://github.com/user-attachments/assets/96d79cc2-254d-452b-b91f-c34dcd645f8d)
 
 ## Getting Started
 
