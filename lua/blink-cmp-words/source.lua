@@ -121,7 +121,9 @@ local function create_source(source_type)
 				success, matches, error =
 					pcall(wordnet.get_word_matches, keyword, self.opts.dictionary_search_threshold)
 			else
+				success = true
 				matches = {}
+				error = nil
 			end
 		else -- thesaurus
 			success, matches, error =
