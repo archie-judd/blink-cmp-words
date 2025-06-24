@@ -1,5 +1,10 @@
 local wordnet = require("blink-cmp-words.wordnet")
 local cmp_types = require("blink.cmp.types")
+local cmp_config = require("blink.cmp.config")
+
+local CORNFLOWER_BLUE = "#6495ed"
+local LAVENDER = "#a685c7"
+local BOOK_ICON = "" -- Unicode character for book icon
 
 --- @class BlinkCmpWordsOpts
 --- @field pointer_symbols string[] Symbols used to indicate pointers in the preview
@@ -78,12 +83,25 @@ local function apply_capitalization(str, cap_type)
 	end
 end
 
+---@param kind_name string
+---@param icon string
+---@param colour string
+local function add_completion_kind(kind_name, icon, colour)
+	local completion_item_kind = cmp_types.CompletionItemKind
+	local blink_kind_icons = cmp_config.appearance.kind_icons
+	completion_item_kind[#completion_item_kind + 1] = kind_name
+	completion_item_kind[kind_name] = #completion_item_kind
+	blink_kind_icons[kind_name] = icon
+	vim.api.nvim_set_hl(0, "BlinkCmpKind" .. kind_name, { default = true, fg = colour })
+end
+
 --- @param source_type "dictionary" | "thesaurus"
 --- @return blink.cmp.Source
 local function create_source(source_type)
 	--- @class BlinkCmpWordsSource: blink.cmp.Source
 	--- @field opts BlinkCmpWordsOpts
 	--- @field source_type "dictionary" | "thesaurus"
+	--- @field completion_item_kind "Dictionary" | "Thesaurus"
 	local source = {}
 
 	--- @param opts BlinkCmpWordsOpts
@@ -95,6 +113,14 @@ local function create_source(source_type)
 		local self = setmetatable({}, { __index = source })
 		self.opts = opts
 		self.source_type = source_type
+		if source_type == "dictionary" then
+			self.completion_item_kind = "Dictionary"
+			add_completion_kind(self.completion_item_kind, BOOK_ICON, CORNFLOWER_BLUE)
+		else -- thesaurus
+			self.completion_item_kind = "Thesaurus"
+			add_completion_kind(self.completion_item_kind, BOOK_ICON, LAVENDER)
+		end
+
 		return self
 	end
 
@@ -141,7 +167,7 @@ local function create_source(source_type)
 			items[i] = {
 				label = apply_capitalization(match, capitalization_type),
 				filterText = keyword,
-				kind = cmp_types.CompletionItemKind.Text,
+				kind = cmp_types.CompletionItemKind[self.completion_item_kind],
 				score_offset = self.opts.score_offset - i * 10, -- Higher is better
 			}
 		end
