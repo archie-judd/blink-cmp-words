@@ -131,7 +131,7 @@ See [here](https://wordnet.princeton.edu/documentation/wninput5wn) for more info
 This plugin uses and includes:
 
 - The [fzy-lua](https://github.com/swarn/fzy-lua) library by [swarn](https://github.com/swarn), licensed under the MIT License.
-- The WordNet 3.0 database, Copyright 2006 by Princeton University. All rights reserved. WordNet is used under the terms of the WordNet License.(see [LICENSE-WORDNET](LICENSE-WORDNET)). 
+- The WordNet 3.0 database, Copyright 2006 by Princeton University. All rights reserved. WordNet is used under the terms of the WordNet License.
 
 For licenses, see: [LICENSE](LICENSE).
 
