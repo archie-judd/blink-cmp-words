@@ -114,7 +114,7 @@ local function create_source(source_type)
 	function source.new(opts)
 		opts = vim.tbl_deep_extend("force", DEFAULT_OPTS, opts or {})
 		vim.validate("blink-cmp-words.opts.dictionary_search_threshold", opts.dictionary_search_threshold, { "number" })
-		vim.validate("blink-cmp-words.opts.defintion_pointers", opts.definition_pointers, { "table" })
+		vim.validate("blink-cmp-words.opts.definition_pointers", opts.definition_pointers, { "table" })
 		vim.validate("blink-cmp-words.opts.similarity_pointers", opts.similarity_pointers, { "table" })
 		vim.validate("blink-cmp-words.opts.similarity_depth", opts.similarity_depth, { "number" })
 		if opts.pointer_symbols then
