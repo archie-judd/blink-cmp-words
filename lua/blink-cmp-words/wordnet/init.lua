@@ -101,7 +101,7 @@ local function get_similar_words_for_synset(full_synset, similarity_pointers, de
 		-- Add words from current synset (only if not already found at lower depth)
 		for _, word in ipairs(synset.words) do
 			if not words_by_depth[word.word] then
-				words_by_depth[word.word] = depth - current_depth
+				words_by_depth[word.word] = depth - current_depth + 1
 			end
 		end
 
