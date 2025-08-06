@@ -91,29 +91,59 @@ end
 ---Find all words in a synset that are similar to the search word. Returns exact synonyms, all "similar to" words, all
 ---of their exact synonyms, and all of their "similar to" words too. This could be recursive with a user-defined depth.
 ---@param full_synset FullSynset
+---@param similarity_pointers string[] A list of pointer symbols to consider for similarity (e.g., {"&", "^"}).
+---@param depth integer The depth of recursion for finding similar words. A depth of 1 means only direct synonyms, 2 means
 ---@return string[]
-local function get_similar_words_for_synset(full_synset)
-	local similar_words = {}
-	for _, word in ipairs(full_synset.words) do
-		table.insert(similar_words, word.word)
-	end
-	for _, full_ptr in ipairs(full_synset.full_pts) do
-		if full_ptr.pointer_symbol == "&" or full_ptr.pointer_symbol == "^" then
-			for _, word in ipairs(full_ptr.synset.words) do
-				table.insert(similar_words, word.word)
+local function get_similar_words_for_synset(full_synset, similarity_pointers, depth)
+	local words_by_depth = {} -- {word = depth}
+
+	local function collect_words_recursive(synset, current_depth)
+		-- Add words from current synset (only if not already found at lower depth)
+		for _, word in ipairs(synset.words) do
+			if not words_by_depth[word.word] then
+				words_by_depth[word.word] = depth - current_depth + 1
 			end
-			if full_ptr.pointer_symbol == "&" then
-				local full_ptr_synset = get_full_synset_for_synset(full_ptr.synset)
-				for _, ptr_ptr in ipairs(full_ptr_synset.full_pts) do
-					if ptr_ptr.pointer_symbol == "&" then
-						for _, word in ipairs(ptr_ptr.synset.words) do
-							table.insert(similar_words, word.word)
-						end
+		end
+
+		-- If we've reached max depth, stop recursing
+		if current_depth <= 0 then
+			return
+		end
+
+		-- Process pointers
+		for _, full_ptr in ipairs(synset.full_pts) do
+			if utils.array_contains(similarity_pointers, full_ptr.pointer_symbol) then
+				-- Add words from pointed synset
+				for _, word in ipairs(full_ptr.synset.words) do
+					if not words_by_depth[word.word] then
+						words_by_depth[word.word] = current_depth
 					end
 				end
+
+				local full_ptr_synset = get_full_synset_for_synset(full_ptr.synset)
+				collect_words_recursive(full_ptr_synset, current_depth - 1)
 			end
 		end
 	end
+
+	collect_words_recursive(full_synset, depth)
+
+	-- Convert to array of {word, depth} pairs and sort by depth
+	local word_depth_pairs = {}
+	for word, word_depth in pairs(words_by_depth) do
+		table.insert(word_depth_pairs, { word, word_depth })
+	end
+
+	table.sort(word_depth_pairs, function(a, b)
+		return a[2] < b[2]
+	end)
+
+	-- Extract just the words
+	local similar_words = {}
+	for _, pair in ipairs(word_depth_pairs) do
+		table.insert(similar_words, pair[1])
+	end
+
 	return similar_words
 end
 
@@ -136,8 +166,11 @@ end
 
 ---Find the exact word in the index, get the synset, and then find and return all similar words
 ---@param user_query string
+---@param fzy_char_threshold integer The threshold for fuzzy matching. If the user_query is shorter than this, an exact match is used.
+---@param similarity_pointers string[] A list of pointer symbols to consider for similarity (e.g., {"&", "^"}).
+---@param similarity_depth integer The depth of recursion for finding similar words. A depth of 1 means only direct synonyms, 2 means synonyms and their synonyms, etc.
 ---@return string[]
-function M.get_similar_words_for_word(user_query, fzy_char_threshold)
+function M.get_similar_words_for_word(user_query, fzy_char_threshold, similarity_pointers, similarity_depth)
 	local best_match
 	local similar_words = {}
 	local search_word = types.SearchQuery.new(user_query)
@@ -155,7 +188,7 @@ function M.get_similar_words_for_word(user_query, fzy_char_threshold)
 	local full_synsets = get_full_synsets_for_word(best_match)
 	local similar_words_raw = {}
 	for _, full_synset in ipairs(full_synsets) do
-		local _similar_words_raw = get_similar_words_for_synset(full_synset)
+		local _similar_words_raw = get_similar_words_for_synset(full_synset, similarity_pointers, similarity_depth)
 		similar_words_raw = utils.join_arrays(similar_words_raw, _similar_words_raw)
 	end
 	similar_words_raw = utils.remove_duplicates(similar_words_raw)
@@ -169,12 +202,13 @@ end
 ---Find the fullsynset and construct and markdown definition string for the provided word. Only include pointers that
 ---are in the pointer filter.
 ---@param user_query string
----@param pointer_symbols PointerSymbol[]
+---@param definition_pointers PointerSymbol[]
 ---@return string
-function M.get_definition_for_word(user_query, pointer_symbols)
+function M.get_definition_for_word(user_query, definition_pointers)
 	local search_query = types.SearchQuery.new(user_query)
 	local full_synsets = get_full_synsets_for_word(search_query.processed)
-	local definition = format.get_definition_string_from_full_synsets(full_synsets, pointer_symbols, search_query.raw)
+	local definition =
+		format.get_definition_string_from_full_synsets(full_synsets, definition_pointers, search_query.raw)
 	return definition
 end
 

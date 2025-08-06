@@ -91,9 +91,9 @@ end
 
 ---Get the full definition string for a given synset
 ---@param full_synsets FullSynset[]
----@param pointer_symbols PointerSymbol[]
+---@param definition_pointers PointerSymbol[]
 ---@param user_query string
-function M.get_definition_string_from_full_synsets(full_synsets, pointer_symbols, user_query)
+function M.get_definition_string_from_full_synsets(full_synsets, definition_pointers, user_query)
 	local definition = ""
 	for i, full_synset in ipairs(full_synsets) do
 		local words = {}
@@ -103,7 +103,7 @@ function M.get_definition_string_from_full_synsets(full_synsets, pointer_symbols
 		end
 		local syntactic_category = SYNSET_TYPE_TO_DESC[full_synset.ss_type]
 		local word_str = table.concat(words, ", ")
-		local pts_string = get_pointer_string(full_synset, pointer_symbols)
+		local pts_string = get_pointer_string(full_synset, definition_pointers)
 
 		definition =
 			string.format("%s%s.[[%s]] %s:\n\n%s", definition, i, syntactic_category, word_str, full_synset.gloss)

@@ -7,13 +7,19 @@ local LAVENDER = "#a685c7"
 local BOOK_ICON = "" -- Unicode character for book icon
 
 --- @class BlinkCmpWordsOpts
---- @field pointer_symbols string[] Symbols used to indicate pointers in the preview
+--- @field definition_pointers string[] Symbols used to indicate pointers in the preview
+--- @field pointer_symbols? string[] @deprecated Use definition_pointers instead
 --- @field dictionary_search_threshold integer Minimum length of a word to search in the dictionary
 --- @field score_offset integer Offset for scoring items, higher is better
+--- @field similarity_pointers string[] Pointers to consider for similarity in thesaurus
+--- @field similarity_depth integer Depth of similarity search in thesaurus
 local DEFAULT_OPTS = {
-	pointer_symbols = { "!", "&", "^" },
+	definition_pointers = { "!", "&", "^" },
+	pointer_symbols = nil,
 	dictionary_search_threshold = 3,
-	score_offset = 100, -- Offset for scoring items, higher is better
+	score_offset = 100,
+	similarity_pointers = { "&", "^" },
+	similarity_depth = 2,
 }
 
 --- @param str string
@@ -108,7 +114,13 @@ local function create_source(source_type)
 	function source.new(opts)
 		opts = vim.tbl_deep_extend("force", DEFAULT_OPTS, opts or {})
 		vim.validate("blink-cmp-words.opts.dictionary_search_threshold", opts.dictionary_search_threshold, { "number" })
-		vim.validate("blink-cmp-words.opts.pointer_symbols", opts.pointer_symbols, { "table" })
+		vim.validate("blink-cmp-words.opts.definition_pointers", opts.definition_pointers, { "table" })
+		vim.validate("blink-cmp-words.opts.similarity_pointers", opts.similarity_pointers, { "table" })
+		vim.validate("blink-cmp-words.opts.similarity_depth", opts.similarity_depth, { "number" })
+		if opts.pointer_symbols then
+			vim.deprecate("opts.pointer_symbols", "opts.definition_pointers", "1.1.0", "blink-cmp-words")
+			opts.definition_pointers = opts.definition_pointers or opts.pointer_symbols
+		end
 
 		local self = setmetatable({}, { __index = source })
 		self.opts = opts
@@ -152,8 +164,13 @@ local function create_source(source_type)
 				error = nil
 			end
 		else -- thesaurus
-			success, matches, error =
-				pcall(wordnet.get_similar_words_for_word, keyword, self.opts.dictionary_search_threshold)
+			success, matches, error = pcall(
+				wordnet.get_similar_words_for_word,
+				keyword,
+				self.opts.dictionary_search_threshold,
+				self.opts.similarity_pointers,
+				self.opts.similarity_depth
+			)
 		end
 
 		if not success then
@@ -185,7 +202,7 @@ local function create_source(source_type)
 		item = vim.deepcopy(item)
 
 		local success, documentation, error =
-			pcall(wordnet.get_definition_for_word, item.label, self.opts.pointer_symbols)
+			pcall(wordnet.get_definition_for_word, item.label, self.opts.definition_pointers)
 		if not success then
 			vim.notify("[blink-cmp-words] Error while definition for word: " .. error, vim.log.levels.ERROR)
 			documentation = ""
