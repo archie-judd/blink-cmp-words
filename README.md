@@ -48,7 +48,16 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 						-- Default pointers define the lexical relations listed under each definition,
 						-- see Pointer Symbols below.
 						-- Default is as below ("antonyms", "similar to" and "also see").
-						pointer_symbols = { "!", "&", "^" },
+						definition_pointers = { "!", "&", "^" },
+
+                        -- The pointers that are considered similar words when using the thesaurus,
+                        -- see Pointer Symbols below.
+                        -- Default is as below ("similar to", "also see" }
+                        similarity_pointers = { "&", "^" },
+
+                        -- The depth of similar words to recurse when collecting synonyms. 1 is similar words, 
+                        -- 2 is similar words of similar words, etc. Increasing this may slow results. 
+                        similarity_depth = 2,
 					},
 				},
 
@@ -66,7 +75,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 						score_offset = 0,
 
 						-- See above
-						pointer_symbols = { "!", "&", "^" },
+						definition_pointers = { "!", "&", "^" },
 					},
 				},
 			},
